@@ -1,0 +1,80 @@
+<!--app/templates/admin/manage_url.html-->
+{% extends "base.html" %}
+
+{% block title %}Manage URLs{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <span class="navbar-brand">Manage URLs</span>
+            <div>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-primary me-2">Back</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" class="mb-4" onsubmit="return validateDomain()">
+                            <div class="mb-3">
+                                <label for="allow_url" class="form-label">Allow Domain</label>
+                                <input type="text" class="form-control" id="allow_url" name="url"  required>
+                                <input type="hidden" name="action" value="allow">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success">Allow Domain</button>
+                            </div>
+                        </form>
+
+                        <form method="POST" onsubmit="return validateDomain()">
+                            <div class="mb-3">
+                                <label for="block_url" class="form-label">Block Domain</label>
+                                <input type="text" class="form-control" id="block_url" name="url" required>
+                                <input type="hidden" name="action" value="block">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-danger">Block Domain</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateDomain() {
+    const urlInput = event.target.querySelector('input[name="url"]');
+    let domain = urlInput.value.trim();
+    
+    // Remove protocol if exists
+    if (domain.startsWith('http://') || domain.startsWith('https://')) {
+        domain = domain.replace(/^https?:\/\//, '');
+    }
+    
+    // Remove www. if exists
+    domain = domain.replace(/^www\./, '');
+    
+    // Remove trailing path if exists
+    domain = domain.split('/')[0];
+    
+    // Domain validation pattern
+    const domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+    
+    if (!domainPattern.test(domain)) {
+        alert('Please enter a valid domain name (e.g., example.com)');
+        return false;
+    }
+    
+    // Update the input value to the cleaned domain
+    urlInput.value = domain;
+    return true;
+}
+</script>
+{% endblock %}
